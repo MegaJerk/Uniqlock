@@ -1,0 +1,976 @@
+:root {
+	/* some easing tests that I may come back to one day... probably not though */
+	/*
+		this is very close to what I want
+		cubic-bezier(0.000, 0.760, 0.500, 0.900);
+		but I think we need a slower IN then rocket out
+	*/
+	/* --ease-out: cubic-bezier(0.500, 0.000, 0.105, 0.855); cubic-bezier(0.305, 0.505, 0.105, 0.855);*/
+	/* --ease-out: cubic-bezier(0.500, 0.000, 0.000, 1.000); */
+	/* --ease-out: cubic-bezier(0,.43,.8,1); */	
+	--ease-out: cubic-bezier(.1,1,.2,1);
+	--color_1: red;
+	--color_2: white;
+	--primary-color: var(--color_1);
+	--secondary-color: var(--color_2);
+	--background-color: white;
+	--foreground-color: red;
+}
+
+* {
+	box-sizing:border-box;
+	image-rendering: pixelated;
+}
+
+@font-face {
+  font-family: "Uniqlo";
+  src: url("../assets/fonts/27_UniqloRegular.woff") format('woff');
+	font-weight: normal;
+}
+
+@font-face {
+  font-family: "Uniqlo";
+  src: url("../assets/fonts/7_UniqloBold.woff") format('woff');
+	font-weight: bold;
+}
+
+@font-face {
+	font-family: "Uniqlo_mini";
+	src: url("../assets/fonts/54_UNIQLOCK\ mini_8pt_st.woff") format("woff");
+	font-weight: normal;
+}
+
+body {
+	margin: 0;
+	overflow: hidden;
+	height: 100vh;
+	height: 100dvh;
+	width: 100vw;
+	width: 100dvw;
+	font-family: Uniqlo, sans-serif;
+	white-space: nowrap;
+}
+
+body.hide{
+	display: none;
+}
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START :: VIEW STAGE / MAIN CONTAINER SIZING */
+/* /////////////////////////////////////////////////////////// */
+#flexContainer  {
+	display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;	
+	width: 100%;
+	height: 100%; 
+}
+
+#viewContainer {
+  position: absolute;
+  width: min(100vw, 100dvw);
+  height: calc(min(100vw, 100dvw) * 9 / 16);
+	z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 1px solid black;
+	background-color: var(--secondary-color);
+}
+
+#time1, #time2, #videoPlayer, #hourPlayer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; 
+  height: 100%;
+  width: 100%;
+  text-align: center;  
+}
+
+/* Not doing anything with the timezone atm. Maybe later! */
+#time1 .timezone, #time2 .timezone {
+	/* font-size: 8vmin; */
+	font-size: 3em;
+	display: none;
+}
+
+#time1 .time, #time2 .time{
+	font-size: 6.3em;
+	font-weight: bold;
+	word-spacing: -.2em
+}
+
+#time1 {
+	color: var(--primary-color);
+	background-color: var(--secondary-color);	
+}
+
+#time2 {
+	color: var(--secondary-color);
+	background-color: var(--primary-color);
+}
+
+/* /////////////////////////////////////////////////////////// */
+/* END :: VIEW STAGE / MAIN CONTAINER SIZING                   */
+/* /////////////////////////////////////////////////////////// */
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START :: COMPONENT ANIMATIONS                               */
+/* /////////////////////////////////////////////////////////// */
+/*
+	To make the side-to-side (or top-to-bottom!) time color animations,
+	a clip-path is used	to push or pull the #time2 div into or out of visibility.
+
+	This is, as far as I know, the easiest way to replicate the original
+	Flash animations without perishing.
+
+	NOTE: The way Clip Path works is by showing only what's not been
+	'clipped' by a positive value of the clip-path. When used with inset,
+	one must remember that a positive value in a given direction means that
+	the clip will START from the shorthand position (top, right, bottom, or left)
+	and go towards the opposite direction to the percentage amount.
+
+	So, a clip-path: inset(30%, 0%, 0%, 0%) means that 30% of the element
+	is being hidden starting from the TOP of the element. Likewise,
+	starting from the bottom, 70% of the element is visible!
+
+	All this is to say, this is why the animations are setup in the way
+	that they are!
+*/
+
+#viewContainer.top-to-bottom #time2:not(.locked) {
+	animation: animateTopToBottom 300ms forwards var(--ease-out);
+}
+#viewContainer.right-to-left #time2:not(.locked) {
+	animation: animateRightToLeft 300ms forwards var(--ease-out);
+}
+#viewContainer.bottom-to-top #time2:not(.locked) {
+	animation: animateBottomToTop 300ms forwards var(--ease-out);
+}
+#viewContainer.left-to-right #time2:not(.locked) {
+	animation: animateLeftToRight 300ms forwards var(--ease-out);
+}
+
+@keyframes animateTopToBottom {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(100% 0% 0% 0%); }
+}
+
+@keyframes animateRightToLeft {
+	from { clip-path: inset(0% 0% 0% 100%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+@keyframes animateBottomToTop {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(0% 0% 100% 0%); }
+}
+
+@keyframes animateLeftToRight {
+	from { clip-path: inset(0% 100% 0% 0%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+
+/* TIME PULSE ANIMATIONS */
+/*
+	At certain times of the day the Time value should 'pulse' with
+	a soft glow the same color as the time text itself. To do this
+	a data attribute is used as the trigger to start the animation,
+	as it is updated with every tick of the clock.
+
+	Because Season 3 has a two hour window where the time background
+	is not locked, but does it's normal side-to-side animations,
+	we have to make sure that both the time2 and time1 elements are
+	being pulsed, hence why I'm targeting both sets of time text.
+
+	Otherwise this would be far smaller :)
+*/
+
+#time2.pulse span[data-previous-Value='0'] {
+	animation: pulseTime_2_0 900ms normal;
+}
+#time2.pulse span[data-previous-Value='1'] {
+	animation: pulseTime_2_1 900ms normal;
+}
+#time2.pulse span[data-previous-Value='2'] {
+	animation: pulseTime_2_2 900ms normal;
+}
+#time2.pulse span[data-previous-Value='3'] {
+	animation: pulseTime_2_3 900ms normal;
+}
+#time2.pulse span[data-previous-Value='4'] {
+	animation: pulseTime_2_4 900ms normal;
+}
+#time2.pulse span[data-previous-Value='5'] {
+	animation: pulseTime_2_5 900ms normal;
+}
+#time2.pulse span[data-previous-Value='6'] {
+	animation: pulseTime_2_6 900ms normal;
+}
+#time2.pulse span[data-previous-Value='7'] {
+	animation: pulseTime_2_7 900ms normal;
+}
+#time2.pulse span[data-previous-Value='8'] {
+	animation: pulseTime_2_8 900ms normal;
+}
+#time2.pulse span[data-previous-Value='9'] {
+	animation: pulseTime_2_9 900ms normal;
+}
+
+#time1.pulse span[data-previous-Value='0'] {
+	animation: pulseTime_1_0 900ms normal;
+}
+#time1.pulse span[data-previous-Value='1'] {
+	animation: pulseTime_1_1 900ms normal;
+}
+#time1.pulse span[data-previous-Value='2'] {
+	animation: pulseTime_1_2 900ms normal;
+}
+#time1.pulse span[data-previous-Value='3'] {
+	animation: pulseTime_1_3 900ms normal;
+}
+#time1.pulse span[data-previous-Value='4'] {
+	animation: pulseTime_1_4 900ms normal;
+}
+#time1.pulse span[data-previous-Value='5'] {
+	animation: pulseTime_1_5 900ms normal;
+}
+#time1.pulse span[data-previous-Value='6'] {
+	animation: pulseTime_1_6 900ms normal;
+}
+#time1.pulse span[data-previous-Value='7'] {
+	animation: pulseTime_1_7 900ms normal;
+}
+#time1.pulse span[data-previous-Value='8'] {
+	animation: pulseTime_1_8 900ms normal;
+}
+#time1.pulse span[data-previous-Value='9'] {
+	animation: pulseTime_1_9 900ms normal;
+}
+
+@keyframes pulseTime_2_0 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_1 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_2 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_3 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_4 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_5 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_6 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_7 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_8 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+@keyframes pulseTime_2_9 {
+  from {
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 50px var(--secondary-color);
+  }
+}
+
+
+@keyframes pulseTime_1_0 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_1 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_2 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_3 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_4 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_5 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_6 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_7 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_8 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+@keyframes pulseTime_1_9 {
+  from {
+    text-shadow: 0 0 20px var(--primary-color), 0 0 50px var(--primary-color);
+  }
+}
+
+
+
+
+
+/* I only want to show the video player on a specific ending second count (6),
+and then it should remain open for 5 seconds before closing again and going
+back into hiding!
+
+This means we need to animate all possible directions that it can be -
+opened / closed on, in addition to initializing it hidden, and NOT animating
+it after it has been opened or closed! */
+
+/* default hidden state. fully clipped */
+#videoPlayer, #hourPlayer {
+	background-color: black;
+	color: black;
+	clip-path: inset(100% 0% 0% 0%);
+	font-size: 3rem;
+}
+
+#videoPlayer .video, #hourPlayer .video {	
+	width: 100%;
+	height: 100%;
+	object-fit: fill;
+}
+
+/*
+	when the '.on' class is added to the video or hour player,
+	the clip-path: inset value is set to 0%, which means that
+	the element will be shown as 100% visible!
+	
+	It should be noted that the .on class will only ever be
+	applied to these elements AFTER the animation has played.
+*/
+#videoPlayer.on, #hourPlayer.on {
+	clip-path: inset(0%);
+}
+
+/*
+	when the '.show' class has been added to the video or hour player,
+	we'll want to animate a reveal. Because the video and hour players start
+	in a hidden state (clip-path: inset(100%)), the keyframes used to animate
+	the transition will be opposite to the keyframes used to animate the time
+	side-to-side change / sweep transitions.
+
+	Additionally, because in the JS we apply the '.show' class before the '.on'
+	class, it's animation will start and subsequently ignore the sudden jump
+	to {clip-path: inset(0%)} that would typically happen when the '.on' class
+	is applied. This actually helps us during the night / midnight times of day
+	when the video player should instantly pop into existence rather than
+	transition into view by way of an animation!
+*/
+#viewContainer.top-to-bottom #videoPlayer.show:not(.locked), #viewContainer.top-to-bottom #hourPlayer.show {
+	animation: animateVidTopToBottomShow 300ms forwards var(--ease-out);
+}
+
+#viewContainer.right-to-left #videoPlayer.show:not(.locked), #viewContainer.right-to-left #hourPlayer.show {
+	animation: animateVidRightToLeftShow 300ms forwards var(--ease-out);
+}
+
+#viewContainer.bottom-to-top #videoPlayer.show:not(.locked), #viewContainer.bottom-to-top #hourPlayer.show {
+	animation: animateVidBottomToTopShow 300ms forwards var(--ease-out);
+}
+
+#viewContainer.left-to-right #videoPlayer.show:not(.locked), #viewContainer.left-to-right #hourPlayer.show {
+	animation: animateVidLeftToRightShow 300ms forwards var(--ease-out);
+}
+
+@keyframes animateVidTopToBottomShow {
+	from { clip-path: inset(0% 0% 100% 0%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+@keyframes animateVidRightToLeftShow {
+	from { clip-path: inset(0% 0% 0% 100%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+@keyframes animateVidBottomToTopShow {
+	from { clip-path: inset(100% 0% 0% 0%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+@keyframes animateVidLeftToRightShow {
+	from { clip-path: inset(0% 100% 0% 0%); }
+	to { clip-path: inset(0% 0% 0% 0%); }
+}
+
+/*
+	Here are the Ease Out animations that play when the video or hour player
+	needs to be hidden when the side-to-side animations aren't locked.
+*/
+#viewContainer.top-to-bottom #videoPlayer.hide:not(.locked), #viewContainer.top-to-bottom #hourPlayer.hide:not(.locked) {
+	animation: animateVidTopToBottomHide 300ms forwards var(--ease-out);
+}
+
+#viewContainer.right-to-left #videoPlayer.hide:not(.locked), #viewContainer.right-to-left #hourPlayer.hide:not(.locked) {
+	animation: animateVidRightToLeftHide 300ms forwards var(--ease-out);
+}
+
+#viewContainer.bottom-to-top #videoPlayer.hide:not(.locked), #viewContainer.bottom-to-top #hourPlayer.hide:not(.locked) {
+	animation: animateVidBottomToTopHide 300ms forwards var(--ease-out);
+}
+
+#viewContainer.left-to-right #videoPlayer.hide:not(.locked), #viewContainer.left-to-right #hourPlayer.hide:not(.locked) {
+	animation: animateVidLeftToRightHide 300ms forwards var(--ease-out);
+}
+
+@keyframes animateVidTopToBottomHide {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(100% 0% 0% 0%); }
+}
+
+@keyframes animateVidRightToLeftHide {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(0% 100% 0% 0%); }
+}
+
+@keyframes animateVidBottomToTopHide {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(0% 0% 100% 0%); }
+}
+
+@keyframes animateVidLeftToRightHide {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(0% 0% 0% 100%); }
+}
+
+/*
+	However if the side-to-side animations are locked, then when a video
+	is done playing, the viewContainer should go black, and slowly fade
+	into showing the clock.
+	
+	To do this, first we'll set the <video> element to display:none,
+	revealing the {background-color: black; color: black} of its containing
+	<div> '#videoPlayer'. Then an animation plays that transitions the
+	opacity for the '#videoPlayer' element from visible to fully
+	transparent. Additionally, the {clip-path: inset()} is kept at
+	0% the entire time (fully visible). Why? Because the default state of the
+	'#videoPlayer' has an inset of '(100%, 0%, 0%, 0%)' (aka: fully hidden).
+	This means that when the animation finishes playing, it's going to discard anything
+	in the keyframes and go back to whatever the css tells it to. In this case
+	it's being fully hidden because we have removed the '.on' class and there
+	is no other css telling the clip-path to differ from the default state.
+
+	Additionally if we only used clip-path at the start of the animation to make
+	the '#videoContainer' visible, then we'd see an additional animation of the
+	clip-path transitioning with its own animation in the background! Gross!
+*/
+#viewContainer:not(.hourOn) #videoPlayer.locked.hide video, #viewContainer:not(.hourOn) #hourPlayer.locked.hide video {
+  display: none;
+}
+
+#viewContainer:not(.hourOn) #videoPlayer.locked.hide, #viewContainer:not(.hourOn) #hourPlayer.locked.hide {
+  animation: fadeVideoOut 2.8s normal ease-in;	
+}
+
+@keyframes fadeVideoOut {
+  from {
+		clip-path: inset(0% 0% 0% 0%);
+    opacity: 1;
+  }
+  to {
+		clip-path: inset(0% 0% 0% 0%);
+    opacity: 0;
+  }
+}
+
+/* /////////////////////////////////////////////////////////// */
+/* END :: COMPONENT ANIMATIONS                                 */
+/* /////////////////////////////////////////////////////////// */
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START :: MODAL SPLASH SCREEN */
+/* /////////////////////////////////////////////////////////// */
+#modal {
+	position: absolute;
+	top:0;
+	left: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;	
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+  color: white;
+  background-color: black;
+	cursor: pointer;
+	border: white solid 3px;
+}
+
+.modalText {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: right;
+	font-size: 8rem;
+	max-height: 60%;
+	cursor: pointer;
+	text-shadow: 0 0 0 #fff;
+	transition-property: text-shadow;
+	transition-duration: 1s;	
+}
+
+.modalText:hover{
+	text-shadow: 0 0 20px #fff, 0 0 50px #fff;
+}
+
+@keyframes glowIn {
+  from {
+    text-shadow: 0 0 5px #fff;
+  }
+  
+  to {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 50px #fff; 
+  }
+}
+
+@keyframes glowOut {
+  from {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 50px #fff; 
+  }
+  
+  to {    
+		text-shadow: 0 0 0 #fff;
+  }
+}
+
+.modalText span {
+	display: block;
+}
+
+.modalTextLower {
+	font-size: 6rem;
+	line-height: 3rem;
+}
+
+#modal.wipe{
+	animation: wipeSplashLeftToRight 400ms ease-out forwards;
+}
+
+@keyframes wipeSplashLeftToRight {
+	from { clip-path: inset(0% 0% 0% 0%); }
+	to { clip-path: inset(0% 0% 0% 100%); }
+}
+
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START :: SPLASH SCREEN MARQUEE */
+/* /////////////////////////////////////////////////////////// */
+.marqueeContainer {
+	flex: 1 1 auto;
+	position: relative;
+	min-width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;	
+}
+
+.marqueeContainer > div {
+	position: fixed;	
+	display: inline-block;
+	white-space: nowrap;
+	left: 0%;	
+	right: 0%;		
+	margin: 3px;	
+	max-width: calc(100% - 6px);
+	height: 5rem;
+	background-color:red;
+}
+
+.marqueeContainer .marqueeTop {
+	top: 0;
+}
+
+.marqueeContainer .marqueeBottom {
+	bottom: 0;
+}
+
+.marqueeText {
+	font-size: 5rem;
+	will-change: transform;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}
+
+/* I could use a normal in the text, but I really like how the
+Uniqlo period looks when used as a bullet, so here we are */
+.bullet{
+	position: relative;
+  display: inline;
+  top: -1.5rem;
+}
+
+
+.marqueeTop > .marqueeText > div.rtl {
+	will-change: transform;
+	animation: textScroll_rtl 120s linear infinite;
+}
+
+@keyframes textScroll_rtl {
+	from {
+		transform: translateX(0%)
+	}
+	to {
+			transform: translateX(-100%)
+	}
+}
+
+/* For whatever reason no matter what I do, this left to right animation
+ just sort of sucks on FireFox... If you can make it so that when the
+ animation resets it doesn't stutter (can't draw .ltr1 fast enough)
+ then you'll win 100 Cool Points™.
+ 
+ Maybe it's because of the nature of having those damn bullet divs in there
+ but even when shortening it down, it still fails to render well!
+
+ At this point though I'm tired of trying!*/
+
+.marqueeBottom > .marqueeText > div.ltr1 {
+	will-change: transform;
+	/*animation: textScroll_ltr1 10s linear infinite;*/
+}
+
+.marqueeBottom > .marqueeText > div.ltr2 {
+	will-change: transform;
+	/* animation: textScroll_ltr2 10s linear infinite;*/
+}
+
+
+
+.marqueeContainer .marqueeBottom .marqueeText>div {
+	will-change: transform;	
+	animation: marquee 10s linear infinite;
+	animation-direction: reverse;
+	text-align: center;
+	margin: 0;
+
+}
+
+
+
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+
+
+
+
+@keyframes textScroll_ltr1 {
+	from {
+		transform: translateX(0%)
+	}
+	to {
+			transform: translateX(100%)
+	}
+}
+
+@keyframes textScroll_ltr2 {
+	from {
+		transform: translateX(-200%)
+	}
+	to {
+			transform: translateX(-100%)
+	}
+}
+
+/*
+Keeping this around for a rainy day.
+It's how I was doing things at first, and while it technically
+wasn't 'correct' it did work quite well... It was just very
+difficult to dial in.
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+*/
+
+/* /////////////////////////////////////////////////////////// */
+/* END ::  SPLASH SCREEN MARQUEE */
+/* /////////////////////////////////////////////////////////// */
+/* END ::  MODAL SPLASH SCREEN */
+/* /////////////////////////////////////////////////////////// */
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START ::  AUDIO TOP DROPDOWN MENU */
+/* /////////////////////////////////////////////////////////// */
+#audioNav {
+  background-color: #FFF;
+  position: fixed;
+  top: 0px;
+	left: 1px;
+	right: 1px;
+	opacity: 0;
+  transition: opacity .5s;
+	z-index: 10000;
+	font-family: "Uniqlo_mini";
+
+	display: flex;
+  align-items: center;
+  justify-content: flex-end; 
+  flex-direction: row;
+	padding-top: 3px;
+}
+
+#audioNav:hover {
+	opacity: 1;
+}
+
+#audioNav input {
+  text-align: center;
+  padding: 15px;
+}
+
+#audioNav img {
+	height: 30px;
+	margin-bottom: 3.5px;
+  margin-left: 10px;
+}
+
+#audioNav span {
+	position: absolute;
+	font-size: 1.5em;	
+	right: 240px;
+}
+
+
+#audioNav button {
+	background: transparent;
+  border: transparent;
+}
+
+/* actual stuff for styling the input range */
+
+#audioNav input[type=range] {
+  -webkit-appearance: none;
+  /*margin: 0 20px;*/
+  width: 150px;
+}
+#audioNav input[type=range]:focus {
+  outline: none;
+}
+
+#audioNav input[type=range]::-webkit-slider-runnable-track {
+  width: 150px;
+  height: 2px;
+  cursor: pointer;
+  background: #000;
+}
+
+#audioNav input[type=range]::-webkit-slider-thumb {  
+  border: 1px solid #000000;
+  height: 20px;
+  width: 6px;  
+  background: #000;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -9px;
+}
+
+#audioNav input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #000;
+}
+
+#audioNav input[type=range]::-moz-range-track {
+  width: 150px;
+  height: 2px;
+  cursor: pointer;
+  background: #000;
+}
+
+#audioNav input[type=range]::-moz-range-thumb {
+  height: 20px;
+  width: 6px;
+  background: #000;
+  cursor: pointer;
+  border: 1px solid #000000;
+  border-radius: 0px;
+}
+
+/* /////////////////////////////////////////////////////////// */
+/* END ::  AUDIO TOP DROPDOWN MENU */
+/* /////////////////////////////////////////////////////////// */
+
+
+/* /////////////////////////////////////////////////////////// */
+/* START ::  MISC / TESTING */
+/* /////////////////////////////////////////////////////////// */
+/* this is used only when doing tick by tick testing */
+/*
+#tickButton {
+	z-index: 2;
+  position: absolute;
+  left: 10px;
+  top: 50px;
+}
+*/
+/* /////////////////////////////////////////////////////////// */
+/* END ::  MISC / TESTING */
+/* /////////////////////////////////////////////////////////// */
+
+/* /////////////////////////////////////////////////////////// */
+/* START :: SIDE MENU - !!!!!!!NOT USED YET!!!!!!!             */
+/* /////////////////////////////////////////////////////////// */
+/*
+label.menu-toggle {	
+	color: var(--secondary-color);
+	background-color: var(--primary-color);
+}
+
+label.menu-toggle:focus {
+	outline: none;
+}
+
+label.menu-toggle > span {
+	
+	display: inline-block;
+	width: 100%;
+	right: 5px;
+	top: 5px;
+	position: relative;
+}
+
+.menu * {
+	margin: 0;
+  padding: 0;
+}
+
+.menu {
+	position: absolute;
+	top: 25%;
+	left: 0;
+	background: #39236c;
+	width: 240px;
+	height: 100%;
+	transform: translate3d(-240px, 0, 0);
+	transition: transform 0.35s;
+	z-index: 20;
+}
+
+.menu label.menu-toggle {
+	position: absolute;
+	right: -60px;
+	width: 60px;
+	height: 60px;
+	display: block;
+	text-align: right;
+}
+.menu ul li > label {
+	background: url(https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-right-b-128.png) 95% 50%/16px 16px no-repeat;
+}
+.menu ul li a, .menu ul li label {
+	display: block;
+	text-align: center;
+	padding: 0 20px;
+	line-height: 60px;
+	text-decoration: none;
+	color: #000;
+}
+.menu ul li a:hover, .menu ul li label:hover {
+	color: #666;
+}
+*/
+/* hide inputs */
+/*
+.menu-checkbox {
+	display: none;
+}
+*/
+/* hide navigation icon for sublabels */
+/*
+.menu .menu label.menu-toggle {
+	background: none;
+}
+*/
+/* fade in checked menu */
+/*
+.menu-checkbox:checked + .menu {
+	transform: translate3d(0, 0, 0);
+}
+*/
+/* /////////////////////////////////////////////////////////// */
+/* END :: SIDE MENU - !!!!!!!NOT USED YET!!!!!!!               */
+/* /////////////////////////////////////////////////////////// */
