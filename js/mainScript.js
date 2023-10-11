@@ -2406,6 +2406,7 @@ function simpleTick() {
 				viewContainer.classList.add("hourOn");
 				hourPlayer.classList.add("show");
 				hourPlayer.classList.add("on");
+
 				currentVideoHourTrack.status = playHour();
 			} else {
 				// because we'll load a new track on the cleanupHour
@@ -2467,6 +2468,16 @@ function simpleTick() {
 				videoPlayer.classList.remove("hide");
 				videoPlayer.classList.add("show");
 				videoPlayer.classList.add("on");
+
+				// it should be noted that .play() on a video element returns a promise
+				// if the tab is in the background (not visible) and the video media has
+				// no sound, the video is automatically paused by Chrome.
+				// If the promise.catch isn't being handled in any way this results in a
+				// a visible error in the console informing you that the tab's video
+				// interrupted the playback.
+
+				// https://developer.chrome.com/blog/media-updates-in-chrome-63-64/#background-video-track-optimizations
+				// https://developer.chrome.com/blog/play-request-was-interrupted/
 				videoTrack.status = playVideo();
 			} else {
 				videoTrack.status = "missed";

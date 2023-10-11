@@ -47,6 +47,7 @@ var seasonalData = {
 		nightEndHour: 6,
 		hasHours: true,
 		hoursFollowTime: false,
+		// hoursFollowDay: true
 		hasHourMusic: true,
 		hourStartingSecond: 0,
 		hourEndingSecond: 30,
