@@ -524,7 +524,7 @@ function simpleTick() {
 			// These special audio tracks were designed to be a full 1 minute,
 			// (and some change) long. However, there was a slight oversight in their
 			// production, in that the last 30 seconds of audio that they play
-			// may be completely innappropriate for the Time of Day that the clock
+			// may be completely inappropriate for the Time of Day that the clock
 			// is currently in. This results in tracks that would normally not be heard
 			// during certain late hours, being played for 30 seconds before the music
 			// would return back to normal.
@@ -777,7 +777,7 @@ function simpleTick() {
 			videoPlayer.classList.remove("on");
 			videoPlayer.classList.add("hide");
 
-			// if forwhatever reason the videoHourPlayer is still hidden
+			// if for whatever reason the videoHourPlayer is still hidden
 			// remove the class
 			hourPlayer.classList.remove("hide");
 		}
@@ -969,7 +969,7 @@ window.onload = function() {
 			// but we'll need to store the value of what the volume was
 			// set to before the user muted audio, so that we can
 			// change the volume back to this value if the mute button
-			// is cliked again to unmute
+			// is clicked again to unmute
 			mute.dataset.unmutedValue = customGain.gain.value;
 
 			// lastly the audio gain is set to 0
@@ -988,7 +988,7 @@ window.onload = function() {
 	}, false);
 
 	// Handle the event for a user clicking on the splash screen to start
-	// the Uniqlock. A user has to interact with the page in some capcity
+	// the Uniqlock. A user has to interact with the page in some capacity
 	// before the browser will allow us to autoplay music!
 	document.getElementById("modal").addEventListener('click', function() {
 		
@@ -1024,10 +1024,10 @@ window.onload = function() {
 		// to load in the on-the-hour video for the upcoming hour.
 		// For instance, if we're already beyond the Season 3 -
 		// Starting Playback Time of HH:55:00, then we should try to select a different season.
-		// Likewise if we're only 1 second away from playback of a normal on-the-hour video
+		// Likewise, if we're only 1 second away from playback of a normal on-the-hour video
 		// then it might be too late!
 		// If we don't fix this, then there is a chance that a video will be loaded and kept
-		// unplayed resulting in an Off-By-One error in video form! the worst type of Off By Ones!
+		// un-played resulting in an Off-By-One error in video form! the worst type of Off By Ones!
 		
 		// Create a special variable called "startingHourVideo" which is used to set the value of currentVideoHourTrack
 		// On the next hour, we check to see if the hourVideoPlayer is playing something

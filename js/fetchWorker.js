@@ -1,4 +1,4 @@
-// import the indexDB / cache
+// import the indexedDB (or do *something* with it!) / cache
 import {videoURLCache, audioBufferCache} from "./modules/cache.js";
 
 function fetchStream(type, path, filename, callback) {
@@ -9,7 +9,6 @@ function fetchStream(type, path, filename, callback) {
 			return callback(audioBufferCache[filename]);
 		}
 
-		//return Promise.all([fetch(url), filename]).then((vals)=>getAudioBufferArray(...vals)).then((vals)=>decodeAudioBuffer(...vals)).then((vals)=>callback(...vals));
 		return Promise.all([fetch(url), filename]).then((vals)=>getAudioBufferArray(...vals)).then((vals)=>setArrayBuffer(...vals)).then(callback);
 
 	} else if (type === "video" || type === "videoHour") {
@@ -27,10 +26,6 @@ function getAudioBufferArray(stream, filename){
 	return Promise.all([stream.arrayBuffer(), filename]);
 }
 
-function decodeAudioBuffer(arrayBuffer, filename){
-	return Promise.all([customContext.decodeAudioData(arrayBuffer), filename]);
-}
-
 function setArrayBuffer(arrayBuffer, filename) {
 	if (filename) {
 		audioBufferCache[filename] = arrayBuffer;
@@ -38,17 +33,6 @@ function setArrayBuffer(arrayBuffer, filename) {
 
 	return arrayBuffer;
 }
-
-
-
-function setSourceBuffer(buffer, filename){
-	if (filename) {
-		audioBufferCache[filename] = buffer;
-	}	
-	return buffer;
-}
-
-
 
 function getVideoBlob(stream, filename) {
 	return Promise.all([stream.blob(), filename]);

@@ -1,5 +1,5 @@
 The following license applies *only* to every file and folder of this project
-***except*** for the './assets' directory and the entirity of its contents, and
+***except*** for the './assets' directory and the entirety of its contents, and
 any explicitly licensed third party library (which are described in detail below).
 
 While I have done my best to keep this license clear, please read it carefully.
@@ -41,7 +41,7 @@ This program uses a modified version of the following MIT licensed software:
 * Present - Copyright (c) 2014 Dan Kaplun - (https://github.com/dbkaplun/present/tree/master)
 * Driftless - Copyright (c) 2014 Dan Kaplun - (https://github.com/dbkaplun/driftless/tree/master)
 
-All relavent licenses can be found bundled in the ./third-parties/licenses directory
+All relevant licenses can be found bundled in the ./third-parties/licenses directory
 
 -------------------------------------------------------------------------
 # Files *Not* Licensed
@@ -50,4 +50,4 @@ All relavent licenses can be found bundled in the ./third-parties/licenses direc
 All media and files found within the assets directory are the property of their
 respective owners and / or copyright holder(s).
 
-For more information please see the Disclamer section of the README: https://github.com/MegaJerk/Uniqlock/tree/main#readme
+For more information please see the Disclaimer section of the README: https://github.com/MegaJerk/Uniqlock/tree/main#readme
