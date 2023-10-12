@@ -683,7 +683,7 @@ Uniqlo period looks when used as a bullet, so here we are */
 
 .marqueeTop > .marqueeText > div.rtl {
 	will-change: transform;
-	animation: textScroll_rtl 120s linear infinite;
+	animation: textScroll_rtl 160s linear infinite;
 }
 
 @keyframes textScroll_rtl {
@@ -719,7 +719,7 @@ Uniqlo period looks when used as a bullet, so here we are */
 
 .marqueeContainer .marqueeBottom .marqueeText>div {
 	will-change: transform;	
-	animation: marquee 10s linear infinite;
+	animation: marquee 20s linear infinite;
 	animation-direction: reverse;
 	text-align: center;
 	margin: 0;
