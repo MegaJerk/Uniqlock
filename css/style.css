@@ -1,3 +1,10 @@
+/*
+	"My name is Ozymandias, King of Kings;
+	Look on my CSS, ye Mighty, and despair!"
+
+	(In reality, I learned most of this while making it! #BlessThisMess)
+*/
+
 :root {
 	/* some easing tests that I may come back to one day... probably not though */
 	/*
@@ -24,20 +31,20 @@
 
 @font-face {
   font-family: "Uniqlo";
-  src: url("../assets/fonts/27_UniqloRegular.woff") format('woff');
-	font-weight: normal;
+  src: url("../assets/fonts/27_UniqloRegular.woff") format('woff');        
+  font-weight: normal;
 }
 
 @font-face {
   font-family: "Uniqlo";
   src: url("../assets/fonts/7_UniqloBold.woff") format('woff');
-	font-weight: bold;
+  font-weight: bold;
 }
 
 @font-face {
-	font-family: "Uniqlo_mini";
-	src: url("../assets/fonts/54_UNIQLOCK\ mini_8pt_st.woff") format("woff");
-	font-weight: normal;
+  font-family: "Uniqlo_mini";
+  src: url("../assets/fonts/54_UNIQLOCK_mini_8pt_st.woff") format("woff");
+  font-weight: normal;
 }
 
 body {

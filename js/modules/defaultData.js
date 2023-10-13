@@ -1,3 +1,5 @@
+/*jslint browser, long, indent2, white, unordered*/
+
 // contains the default configuration of each season
 var seasonalData = {
 	"1": {
@@ -881,8 +883,7 @@ var musicBySeason = {
 			"day": [],
 			"night": [],
 			"midnight": []
-		},
-		
+		}
 	},
 	"2": {
 		"minutes": {

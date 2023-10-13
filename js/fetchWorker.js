@@ -1,3 +1,9 @@
+/*jslint browser, long, indent2, white */
+
+/*global
+  self, console
+*/
+
 // import the indexedDB (or do *something* with it!) / cache
 import {videoURLCache, audioBufferCache} from "./modules/cache.js";
 
@@ -16,7 +22,7 @@ function fetchStream(type, path, filename, callback) {
 		if (videoURLCache[filename]) {
 			return callback(videoURLCache[filename]);
 		}
-		return Promise.all([fetch(url), filename]).then((vals)=>getVideoBlob(...vals)).then((vals)=>getBlobURL(...vals)).then(callback);
+		return Promise.all([fetch(url), filename]).then((vals)=>getVideoBlob(...vals)).then((vals)=>getObjectURL(...vals)).then(callback);
 	} else {
 		return undefined;
 	}
@@ -38,17 +44,17 @@ function getVideoBlob(stream, filename) {
 	return Promise.all([stream.blob(), filename]);
 }
 
-function getBlobURL(blob, filename){	
-	var blobURL = self.URL.createObjectURL(blob);
+function getObjectURL(blob, filename){
+	var objectURL = self.URL.createObjectURL(blob);
 
 	if (filename) {
-		videoURLCache[filename] = blobURL;
+		videoURLCache[filename] = objectURL;
 	}
 
-	return blobURL;
+	return objectURL;
 }
 
-onmessage = function(event) {
+self.onmessage = function(event) {
 	var data = event.data;
 	var fetch = data.fetch;
 	var type = data.type;
@@ -59,14 +65,13 @@ onmessage = function(event) {
 
 	if (fetch) {
 		if (type === "video" || type === "videoHour") {
-			fetchStream(type, path, filename, function(videoBlobURL){
-				postMessage({"requestData": event.data, "videoBlobURL": videoBlobURL});
-			});			
-		} else if (type === "audio") {			
-			fetchStream(type, path, filename, function(arrayBuffer){					
-				postMessage({"requestData": event.data, "arrayBuffer": arrayBuffer});					
+			fetchStream(type, path, filename, function(videoObjectURL){
+				postMessage({"requestData": event.data, "videoObjectURL": videoObjectURL});
 			});
-						
+		} else if (type === "audio") {
+			fetchStream(type, path, filename, function(arrayBuffer){
+				postMessage({"arrayBuffer": arrayBuffer, "requestData": event.data});
+			});
 		}
 	}
-}
+};
