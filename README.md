@@ -21,9 +21,11 @@ Though the era of internet that helped to create the Uniqlock is long gone, Uniq
 
 ## How To Use
 
-Click Here for a demo!
+Simply [Click Here](https://megajerk.github.io/Uniqlock/)!
 
-But if you'd like to run it locally, download the latest release. Just remember that you'll need to open some sort of web server to get it working as this uses Web Workers, which are blocked from running under the file: protocol. An easy way to do that would be to:
+*please see the [known issues](https://github.com/MegaJerk/Uniqlock#known-issues) section if you're a firefox user*
+
+If you'd like to run it locally, download the latest release. Just remember that you'll need to open some sort of web server to get it working as this uses Web Workers, which are blocked from running under the file: protocol. An easy way to do that would be to:
 
 1. Download Visual Studio Code
 
