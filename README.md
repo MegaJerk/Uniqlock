@@ -89,10 +89,16 @@ After that, the tentative idea for a Version 3 would be giving users the ability
 Somewhere along the line (perhaps version 1.5!) I would also like to package this project up using Atom or some other cross-platform wrapper, that would allow for people to once again run the Uniqlock locally as a screensaver or program in a way that doesn't require any internet connectivity.
 
 
+## Known Issues!
 
+* Not all videos play correctly in Firefox
+* Volume slider not correctly sized in Firefox
 
+I have really tried to get this thing working across Chrome ***and*** Firefox, but there are some issues that make Firefox a less viable choice at the moment. The major issue I've found is that certain videos just won't actually *play* when using the Firefox browser. All signs point to the video being played, but it just shows a frozen frame despite the fact that the code says that a video is playing and progressing as normal!
 
+I suspect that it has something to do with how the files are encoded as it seems to consistently choke on a handful of videos, but I'm going to have to come up with a reasonable way of testing that hunch (though I do have something in mind).
 
+If you find any more oddities (or have suggestions on how to fix a thing), please open up a ticket or make a request!
 
 
 
@@ -133,7 +139,7 @@ If you believe that this project has violated your copyright, feel free to conta
 
 Thank You.
 
-## Special Thanks
+## Special Thanks and Ending Credits
 
 Shout Outs and Special Thanks to:
 
@@ -142,3 +148,9 @@ Shout Outs and Special Thanks to:
 - Screensavers Planet™ for [hosting](https://www.screensaversplanet.com/help/guides/windows/how-to-install-all-missing-uniqlo-seasons-57) the final version of the Uniqlock / Calendar screensaver, which had a complete collection of every video used
 
 - Rani Baker whose constant progress in hacking and code-work inspired me to shut-up and actually get to the dirty work and the joy of taking something apart and putting it back together - in your own way. You're deeply missed.
+
+---
+
+This software is dedicated to the countless others who have watched some of the most interesting parts of the internet come and go, and are now left with only vague memories. So much of the online experience is made up of hatred, blasé nihilism, and an endless torrent of speculative get rich schemes; it’s easy to forget that online culture wasn’t always rooted in those insincerities. Though this silly little clock won’t fix the world, I do hope that perhaps at least some people will find the joy in having a simple and fun experience that can be shared across any border or barrier. With any luck, you too may find the inspiration to start working on your own simple and fun experiment.
+
+I look forward to seeing it.

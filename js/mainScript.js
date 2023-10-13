@@ -36,11 +36,11 @@ var time2 = document.querySelector("#time2 .time");
 
 var videoPlayer = document.querySelector("#videoPlayer");
 var video = document.querySelector("#videoPlayer video");
-var source = document.querySelector("#videoPlayer video source");
+//var source = document.querySelector("#videoPlayer video source");
 
-var hourPlayer = document.querySelector("#hourPlayer"); // CHANGE THIS NAME!
+var hourPlayer = document.querySelector("#hourPlayer");
 var hourVideo = document.querySelector("#hourPlayer video");
-var hourSource = document.querySelector("#hourPlayer video source");
+//var hourSource = document.querySelector("#hourPlayer video source");
 
 var muteControl = document.querySelector("[data-action='mute']");
 var volumeControl = document.querySelector("[data-action='volume']");
@@ -209,14 +209,17 @@ function getNextVideoHourTrack(season, nextHour) {
 }
 
 function setVideoSource(blobURL) {
-  source.src = blobURL;
-  video.load();
+
+  ///source.src = blobURL;
+  video.src = blobURL;
+  // video.load();
   return "loaded";
 }
 
 function setHourSourceTrack(videoHourSource) {
-  hourSource.src = videoHourSource;
-  hourVideo.load();
+  //hourSource.src = videoHourSource;
+  hourVideo.src = videoHourSource;
+  //hourVideo.load();
   return "loaded";
 }
 
