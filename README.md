@@ -7,13 +7,13 @@
 >   — King's Lead Hat, Brian Eno
 
 
-On June 15th, 2007, the Uniqlock was released online and would go on to become one of the most well received and interesting marketing campaigns on the internet. With 6 seasons of releases, 10 years of time passed, and Adobe Flash's looming death-date on the horizon, the Uniqlock would be unceremoniously taken offline in early 2017. Just 3 years later on December 31st, 2020, Adobe Flash Player would be removed from Microsoft Windows automatically via an update, making running the Uniqlock screensavers (which were just running .swf files at their core) a difficult and potentially dangerous task.
+On June 15th, 2007, the Uniqlock was released online and would go on to become one of the most well received and interesting marketing campaigns on the internet. With 6 seasons of releases, 10 years of time passed, and Adobe Flash's looming death-date on the horizon, the Uniqlock would be unceremoniously taken offline in early 2017. Just 3 years later on December 31st, 2020, Adobe Flash Player would be removed from Microsoft Windows automatically via an update, making running the Uniqlock screensavers (which were just utilizing .swf files at their core) a difficult and potentially dangerous task.
 
-With most of the official files and website being wiped off the net, anyone wanting to experience the Uniqlock would either need to find a (hopefully) safe archival of the files, or watch from the small collection of captured footage posted to YouTube. With neither experience being particularly fun or practical. Uniqlock usage sank to an all-time low.
+With the official files and website being wiped off the net, anyone wanting to experience the Uniqlock would either need to find a (hopefully safe) archive of the files, or watch from the small collection of captured footage posted to YouTube. With neither experience being particularly fun or practical. Uniqlock usage sank to an all-time low.
 
 That is... Until today!
 
-Using all of the latest available ***standard*** web technology, I have painstakingly labored to create the most accurate Uniqlock experience to date, completely and totally Adobe Flash free! Combing through my own personal archives and a well preserved online backup of the Uniqlock, I was able to extract (what is, as far as I can tell) every piece of media used to create every season of the Uniqlock; And have combined them into a 1:1 experience that runs in almost any modern browser.
+Using all of the latest available ***standard*** web technology, I have painstakingly labored to create the most accurate Uniqlock experience to date, completely and totally Adobe Flash free! Combing through my own personal archives and a well preserved online backup of the Uniqlock, I was able to extract (what is, as far as I can tell) every piece of media used to create every season of the Uniqlock; And have combined them into a near 1:1 experience that runs in almost any modern browser.
 
 Though the era of internet that helped to create the Uniqlock is long gone, Uniqlock Rewind is my attempt at preserving at least some small part of what made those days so special, and to provide, for the generations of people who may have missed it, an opportunity to find themselves helplessly hypnotized by the charm and design of this fun little clock.
 
