@@ -42,7 +42,7 @@ That *should* launch the page locally, and allow everything to work as intended.
 
 
 
-## Current Features
+## Current (Missing) Features
 
 The version 1.x release is all about creating parity with the Flash versions of the clock. Because so much has already been implemented, it's easier to list which features are still missing
 
