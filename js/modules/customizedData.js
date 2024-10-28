@@ -1,10 +1,10 @@
 /*jslint browser, long, indent2, white */
 
-import { seasonalData, videosBySeason, musicBySeason } from "./defaultData.js";
+import {seasonalData, videosBySeason, musicBySeason} from "./defaultData.js";
 
 // when initialized will hold references to the various seasons
 // that are available to select videos / music from
-var availableSeasons = getAvailableSeasons([1,2,3,4,5,6]);
+var availableSeasons = getAvailableSeasons([1, 2, 3, 4, 5, 6]);
 
 // holds the user's custom configurations of how they want the app to behave
 // initializes to a default custom config
@@ -41,15 +41,15 @@ function getAvailableSeasons(selectedSeasons) {
 
   availableSeasonsObject.highest = Math.max(...selectedSeasons);
 
-  availableSeasonsObject.nights = selectedSeasons.filter(function(season){
+  availableSeasonsObject.nights = selectedSeasons.filter(function (season) {
     return seasonalData[season].hasNight;
   });
 
-  availableSeasonsObject.midnights = selectedSeasons.filter(function(season){
+  availableSeasonsObject.midnights = selectedSeasons.filter(function (season) {
     return seasonalData[season].hasMidnight;
   });
 
-  availableSeasonsObject.hours = selectedSeasons.filter(function(season){
+  availableSeasonsObject.hours = selectedSeasons.filter(function (season) {
     return seasonalData[season].hasHours;
   });
 
@@ -58,7 +58,7 @@ function getAvailableSeasons(selectedSeasons) {
 
 function createCustomSeasonData(userCustomSeasonalData) {
   // thanks Angus Croll, wherever you are
-  if (({}).toString.call(userCustomSeasonalData).match(/\s([a-zA-Z]+)/)[1].toLowerCase() !== "object") {
+  if (Object.create({}).toString.call(userCustomSeasonalData).match(/\s([a-zA-Z]+)/)[1].toLowerCase() !== "object") {
     userCustomSeasonalData = {
       glowEndHour: 6,
       glowStartHour: 21,
@@ -80,8 +80,8 @@ function createCustomSeasonData(userCustomSeasonalData) {
 
 function createMusicOverrides(userMusicOverrides) {
 
-  if (({}).toString.call(userMusicOverrides).match(/\s([a-zA-Z]+)/)[1].toLowerCase() !== "object") {
-      userMusicOverrides = {
+  if (Object.create({}).toString.call(userMusicOverrides).match(/\s([a-zA-Z]+)/)[1].toLowerCase() !== "object") {
+    userMusicOverrides = {
       hourRules: {
         midnight: ["Special - Hour - Season 2.ogg"],
         night: ["Special - Hour - Season 2.ogg"]
@@ -99,7 +99,7 @@ function getAvailableVideoSeconds(selectedSeasons, videosBySeason) {
   var night = [];
   var midnight = [];
 
-  selectedSeasons.forEach(function(season){
+  selectedSeasons.forEach(function (season) {
     day = day.concat(videosBySeason[season].seconds.day);
     night = night.concat(videosBySeason[season].seconds.night);
     midnight = midnight.concat(videosBySeason[season].seconds.midnight);
@@ -115,7 +115,7 @@ function getAvailableVideoSeconds(selectedSeasons, videosBySeason) {
 function getAvailableVideoHours(selectedHours, videosBySeason, seasonalData) {
 
   var hourVideosObject = {};
-  selectedHours.forEach(function(season){
+  selectedHours.forEach(function (season) {
     hourVideosObject[season] = {};
     hourVideosObject[season].hoursFollowTime = seasonalData[season].hoursFollowTime;
     hourVideosObject[season].hours = videosBySeason[season].hours;
@@ -130,7 +130,7 @@ function getAvailableMusicMinutes(availableSeasons, musicBySeason) {
   var day = [].concat(musicBySeason[availableSeasons.highest].minutes.day);
   var night = [];
   var midnight = [];
-  availableSeasons.selected.forEach(function(season){
+  availableSeasons.selected.forEach(function (season) {
     night = [...new Set([...night, ...musicBySeason[season].minutes.night])];
     midnight = [...new Set([...midnight, ...musicBySeason[season].minutes.midnight])];
   });
@@ -146,20 +146,20 @@ function getAvailableMusicHours(hourSeasons, seasonalData, musicOverrides) {
 
   var musicHoursObject = {};
 
-  hourSeasons.forEach(function(season){
+  hourSeasons.forEach(function (season) {
 
     var defaultKeys = ["day", "night", "midnight"];
     var currentSeasonHourlyMusicObject = {};
     var overrideHourRules = musicOverrides.hourRules !== undefined;
     var seasonHourMusicOverride = overrideHourRules && musicOverrides.hourRules[season] !== undefined;
-    var universalHourMusicOverride =  Boolean(musicOverrides &&
-                                        (musicOverrides.hourRules.day || 
-                                        musicOverrides.hourRules.night || 
-                                        musicOverrides.hourRules.midnight));
+    var universalHourMusicOverride = Boolean(musicOverrides &&
+      (musicOverrides.hourRules.day ||
+        musicOverrides.hourRules.night ||
+        musicOverrides.hourRules.midnight));
 
     if (seasonHourMusicOverride) {
 
-      Object.keys(musicOverrides.hourRules[season]).forEach(function(key){
+      Object.keys(musicOverrides.hourRules[season]).forEach(function (key) {
         currentSeasonHourlyMusicObject[key] = musicOverrides.hourRules[season][key];
 
         if (defaultKeys.indexOf(key) > -1) {
@@ -172,7 +172,7 @@ function getAvailableMusicHours(hourSeasons, seasonalData, musicOverrides) {
     if (seasonalData[season].hasHourMusic && defaultKeys.length > 0) {
       // now we set the default values
 
-      defaultKeys.forEach(function(key){
+      defaultKeys.forEach(function (key) {
         // if there is actually something to add from the default repo...
         if (musicBySeason[season].hours[key].length > 0) {
           currentSeasonHourlyMusicObject[key] = musicBySeason[season].hours[key];
@@ -184,7 +184,7 @@ function getAvailableMusicHours(hourSeasons, seasonalData, musicOverrides) {
 
       if (universalHourMusicOverride) {
         // now we override anything that needs to be overriden by universal rules:
-        ["day", "night", "midnight"].forEach(function(key){
+        ["day", "night", "midnight"].forEach(function (key) {
           if (musicOverrides.hourRules && musicOverrides.hourRules[key] !== undefined) {
             currentSeasonHourlyMusicObject[key] = musicOverrides.hourRules[key];
           }
@@ -200,4 +200,12 @@ function getAvailableMusicHours(hourSeasons, seasonalData, musicOverrides) {
   return musicHoursObject;
 }
 
-export {availableMusicHours, availableMusicMinutes, availableSeasons, availableVideoHours, availableVideoSeconds, customSeasonalData, musicOverrides};
+export {
+  availableMusicHours,
+  availableMusicMinutes,
+  availableSeasons,
+  availableVideoHours,
+  availableVideoSeconds,
+  customSeasonalData,
+  musicOverrides
+};

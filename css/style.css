@@ -26,7 +26,7 @@
 
 * {
 	box-sizing:border-box;
-	image-rendering: pixelated;
+	
 }
 
 @font-face {
@@ -795,86 +795,87 @@ difficult to dial in.
 	z-index: 10000;
 	font-family: "Uniqlo_mini";
 
-	display: flex;
+	display: inline-flex;
   align-items: center;
   justify-content: flex-end; 
-  flex-direction: row;
-	padding-top: 3px;
+
+	min-height: 50px;
+  padding-right:50px;
+
+	/* this affects video rendering in FF as well! */
+	/* so don't put it on root! */
+	image-rendering: pixelated;
 }
 
-#audioNav:hover {
+#audioNav:hover, #audioNav.screenPressed {
 	opacity: 1;
 }
 
-#audioNav input {
-  text-align: center;
-  padding: 15px;
-}
-
-#audioNav img {
-	height: 30px;
-	margin-bottom: 3.5px;
-  margin-left: 10px;
-}
-
-#audioNav span {
-	position: absolute;
+#audioNav span {	
 	font-size: 1.5em;	
 	right: 240px;
 }
 
+#audioNav .audioControl img {
+	height: 30px;
+	margin-bottom: 3.5px;
+  margin-left: 10px;
+  
+}
 
 #audioNav button {
 	background: transparent;
   border: transparent;
+	min-width: 100px;
+  padding-top: 6px; 
+  cursor: pointer;
 }
 
-/* actual stuff for styling the input range */
-
+/*
+  A better world with range inputs that are styled the same
+  across browsers is possible and I have made it a reality!
+*/
 #audioNav input[type=range] {
   -webkit-appearance: none;
-  /*margin: 0 20px;*/
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
   width: 150px;
 }
-#audioNav input[type=range]:focus {
-  outline: none;
+
+/******** Non-Firefox Browsers ********/
+#audioNav input[type="range"]::-webkit-slider-runnable-track {
+  background: #000000;
+  height: 0.25rem;
 }
 
-#audioNav input[type=range]::-webkit-slider-runnable-track {
-  width: 150px;
-  height: 2px;
-  cursor: pointer;
-  background: #000;
+/******** Firefox ********/
+#audioNav input[type="range"]::-moz-range-track {
+  background: #000000;
+  height: 0.25rem;
 }
 
-#audioNav input[type=range]::-webkit-slider-thumb {  
-  border: 1px solid #000000;
-  height: 20px;
-  width: 6px;  
-  background: #000;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -9px;
+/******** Non-Firefox Browsers ********/
+#audioNav input[type="range"]::-webkit-slider-thumb {
+    /* Override default look */
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2rem;
+    width: .5rem;
+    /* Centers Thumb - Needs to get vars */
+    margin-top: calc((.25rem/2) - (2rem/2));  
+    background-color: #000000;       
 }
 
-#audioNav input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #000;
-}
-
-#audioNav input[type=range]::-moz-range-track {
-  width: 150px;
-  height: 2px;
-  cursor: pointer;
-  background: #000;
-}
-
-#audioNav input[type=range]::-moz-range-thumb {
-  height: 20px;
-  width: 6px;
-  background: #000;
-  cursor: pointer;
-  border: 1px solid #000000;
-  border-radius: 0px;
+/******** Firefox ********/
+#audioNav input[type="range"]::-moz-range-thumb {
+    /* Removes extra border that FF applies */
+    border: none;
+    /* Removes default border-radius that FF applies */
+    border-radius: 0;
+    height: 2rem;
+    width: .5rem;
+    background-color: #000000;       
 }
 
 /* /////////////////////////////////////////////////////////// */

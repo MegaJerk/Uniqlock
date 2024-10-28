@@ -93,12 +93,7 @@ Somewhere along the line (perhaps version 1.5!) I would also like to package thi
 
 ## Known Issues!
 
-* Not all videos play correctly in Firefox
-* Volume slider not correctly sized in Firefox
-
-I have really tried to get this thing working across Chrome ***and*** Firefox, but there are some issues that make Firefox a less viable choice at the moment. The major issue I've found is that certain videos just won't actually *play* when using the Firefox browser. All signs point to the video being played, but it just shows a frozen frame despite the fact that the code says that a video is playing and progressing as normal!
-
-I suspect that it has something to do with how the files are encoded as it seems to consistently choke on a handful of videos, but I'm going to have to come up with a reasonable way of testing that hunch (though I do have something in mind).
+Mobile performance is still not that impressive. CPU power just isn't able to do what needs to be done to get certain videos ready to play regardless of connection speed. I have found that by using an AV1 codec I can create some astoundingly small video files, but will need to investigate browser support / compatibility before committing to that.
 
 If you find any more oddities (or have suggestions on how to fix a thing), please open up a ticket or make a request!
 

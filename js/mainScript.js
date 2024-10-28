@@ -21,8 +21,8 @@ var audioGain = audioContext.createGain();
 var videoAssetsPath = "../assets/videos/";
 var videoTrack = {};
 var videoHourTrack = {};
-var videoObjectURL = undefined;
-var videoHourObjectURL = undefined;
+//var videoObjectURL = undefined;
+//var videoHourObjectURL = undefined;
 
 /////////////////////////////////////////////////////////////////
 // DOM ELEMENTS
@@ -140,7 +140,6 @@ function getRandomVideoSeason(type, minutes, seconds) {
 
   var actualTimeOfDay = ((minutes === 59 && seconds >= 56) ? nextTimeOfDay : timeOfDay);
   var seasonSelected = 0;
-
   if (type !== "hour") {
     if (actualTimeOfDay === "day") {
       seasonSelected = availableSeasons.selected[Math.floor(Math.random() * availableSeasons.selected.length)];
@@ -157,23 +156,27 @@ function getRandomVideoSeason(type, minutes, seconds) {
 }
 
 function getNextVideoTrack(minutes, seconds) {
+  var debugging = false;
   var realSeconds = ((videoTrack.status === undefined && seconds >= 55) ? seconds + 10 : seconds);
-  var actualTimeOfDay = ((minutes === 59 && realSeconds >= 56) ? nextTimeOfDay : timeOfDay);
-  var season = getRandomVideoSeason("seconds", minutes, seconds);
+  var actualTimeOfDay = ((debugging) ? "night" : ((minutes === 59 && realSeconds >= 56) ? nextTimeOfDay : timeOfDay));
+  var season = ((debugging) ? 7 : getRandomVideoSeason("seconds", minutes, seconds));
   var tracks = videosBySeason[season].seconds[actualTimeOfDay];
   var max = tracks.length;
   var randomIndex = getRandomIndex(max, ((videoTrack.season === season) ? videoTrack.index : -1));
   var selectedSeasonPath = `${videoAssetsPath}Season ${season}/`;
   var selectedTrack = `${tracks[randomIndex]}`;
 
-  return {
+  var newVideoObject = {
     "ID": `${minutes}${realSeconds}`,
     "filename": selectedTrack,
     "index": randomIndex,
     "path": selectedSeasonPath,
     "season": season,
-    "status": "new"
+    "src": `${selectedSeasonPath}${selectedTrack}`,
+    "status": "ready"
   };
+
+  return newVideoObject;
 }
 
 function getNextVideoHourTrack(season, nextHour) {
@@ -181,7 +184,7 @@ function getNextVideoHourTrack(season, nextHour) {
   var tracks = videosBySeason[season].hours;
   var max = tracks.length;
   var randomTrackIndex = 0;
-  var currentVideoObject = {
+  var currentHourVideoObject = {
     "ID": `${dateNow.getMinutes()}${dateNow.getSeconds()}`,
     "filename": "",
     "hasHourMusic": seasonalData[season].hasHourMusic,
@@ -189,7 +192,8 @@ function getNextVideoHourTrack(season, nextHour) {
     "hourStartingSecond": seasonalData[season].hourStartingSecond,
     "path": `${videoAssetsPath}Season ${season}/`,
     "season": season,
-    "src": ""
+    "src": "",
+    "status": "ready"
   };
 
   if (seasonalData[season].hoursFollowTime) {
@@ -197,32 +201,46 @@ function getNextVideoHourTrack(season, nextHour) {
       nextHour = 0;
     }
 
-    currentVideoObject.filename = `${tracks[nextHour]}`;
-    currentVideoObject.src = `${currentVideoObject.path}${currentVideoObject.filename}`;
+    currentHourVideoObject.filename = `${tracks[nextHour]}`;
+    currentHourVideoObject.src = `${currentHourVideoObject.path}${currentHourVideoObject.filename}`;
   } else {
     randomTrackIndex = Math.floor(Math.random() * max);
-    currentVideoObject.filename = `${tracks[randomTrackIndex]}`;
-    currentVideoObject.src = `${currentVideoObject.path}${currentVideoObject.filename}`;
+    currentHourVideoObject.filename = `${tracks[randomTrackIndex]}`;
+    currentHourVideoObject.src = `${currentHourVideoObject.path}${currentHourVideoObject.filename}`;
   }
 
-  return currentVideoObject;
+  return currentHourVideoObject;
 }
 
-function setVideoSource(blobURL) {
-
-  ///source.src = blobURL;
-  video.src = blobURL;
-  // video.load();
+function setVideoSource(videoLoction) {
+  video.src = videoLoction;
   return "loaded";
 }
 
-function setHourSourceTrack(videoHourSource) {
-  //hourSource.src = videoHourSource;
-  hourVideo.src = videoHourSource;
-  //hourVideo.load();
+function setHourSourceTrack(videoHourLocation) {
+  hourVideo.src = videoHourLocation;
   return "loaded";
 }
 
+/* there is some sort of error in FF where certain videos fail to playback
+I am not sure if this is just a browser issue or if the encoding of one of the
+webm files is strange, or if maybe I just need to tweak some code a bit.
+
+Either way I need to start looking at the following files:
+
+Season 2 - Night - 10.webm
+Season 2 - Night - 21.webm
+Season 3 - Night - 01.webm
+Season 3 - Night - 02.webm
+Season 3 - Night - 03.webm
+Season 3 - Night - 04.webm
+Season 3 - Night - 06.webm
+Season 4 - Night - 14.webm
+Season 5 - Night - 23.webm
+
+NOTE: Not all of these are 100 percent not working, but most of them (from season 3) are not
+for whatever reason. It's worth testing a handful to help get to the bottom of it.
+*/
 function playVideo() {
   var playback = video.play();
 
@@ -438,7 +456,7 @@ function getTimes() {
 }
 
 function initialize() {
-  console.log("setting time stuff now!");
+  //console.log("setting time stuff now!");
 
   // IIEF that does the work of figuring out if we're using the clickWorker
   // or the regular setInterval to run this thing.
@@ -474,6 +492,45 @@ function initialize() {
 
   // display:none the modal to stop animations
   document.getElementById("modal").classList.add("hide");
+}
+
+function enterFullScreen() {
+  var htmlBody = document.body;
+  if (htmlBody.requestFullscreen) {
+    // Most Browsers
+    return htmlBody.requestFullscreen();
+  }
+
+  if (htmlBody.webkitRequestFullscreen) {
+    // iOS
+    return htmlBody.webkitRequestFullscreen();
+  }
+
+  if(htmlBody.msRequestFullscreen) {
+    // IE
+    return htmlBody.msRequestFullscreen();
+  }
+
+  return undefined;
+}
+
+function exitFullScreen() {
+  if (document.exitFullscreen) {
+    // Most Browsers
+    return document.exitFullscreen();
+  }
+
+  if (document.webkitExitFullscreen) {
+    // iOS
+    return document.webkitExitFullscreen();
+  }
+
+  if (document.msExitFullscreen) {
+    // IE
+    return document.msExitFullscreen();
+  }
+
+  return undefined;
 }
 
 
@@ -565,7 +622,12 @@ function clockTick() {
     // The audio buffer is stored in the audioBuffer once it has been obtained.
 
     // THIS IS NOT SYNCHRONOUS even if the audio buffer is not already in the audioBufferCache!
-    fetchWorker.postMessage({"fetch": true, "filename": audioTrack.filename, "path": audioAssetsPath, "type": "audio"});
+    fetchWorker.postMessage({
+      "filename": audioTrack.filename, 
+      "isFetch": true,
+      "path": audioAssetsPath, 
+      "type": "audio"
+    });
   }
 
   // cleanupVideo will be true if the videoplayer
@@ -585,8 +647,6 @@ function clockTick() {
       // and get the blobURL
       if (videoTrack.status === "played" || videoTrack.status === "missed") {
         videoTrack = getNextVideoTrack(currentTime.minutes, currentTime.seconds);
-        videoTrack.status = "requesting";
-        fetchWorker.postMessage({"ID": videoTrack.ID, "fetch": true, "filename": videoTrack.filename, "path": videoTrack.path, "type": "video"});
       }
     } else {
       // Otherwise...
@@ -601,7 +661,10 @@ function clockTick() {
       // opportunity to load the objectURL just before the video is set
       // to be played a little lower in this code.
       if (videoTrack.status === "ready") {
-        videoTrack.status = setVideoSource(videoObjectURL);
+        videoTrack.status = setVideoSource(videoTrack.src);
+      } else if (videoTrack.status === "missed") {
+        videoTrack = getNextVideoTrack(currentTime.minutes, currentTime.seconds);
+
       }
     }
 
@@ -635,8 +698,7 @@ function clockTick() {
         // Season 3 Hour Videos start on second 55, so using the currentTime.hours + 1 will result in a
         // rare Off-By-One error in video form! Terrible!
         videoHourTrack = getNextVideoHourTrack(getRandomVideoSeason("hour"), ((videoHourTrack.hourStartingSecond > 0) ? currentTime.hours + 2 : currentTime.hours + 1));
-        videoHourTrack.status = "requesting";
-        fetchWorker.postMessage({"ID": videoHourTrack.ID, "fetch": true, "filename": videoHourTrack.filename, "path": videoHourTrack.path, "type": "videoHour"});
+        videoHourTrack.status = setHourSourceTrack(videoHourTrack.src);
       }
     }
     // Set this to false so we don't run it every tick.
@@ -686,8 +748,8 @@ function clockTick() {
       // to get the video loaded, and this is it.
       if (videoHourTrack.status === "ready") {
         //console.log("THIS VIDEO WAS SET TO LOADED");
-        console.log(videoHourTrack);
-        videoHourTrack.status = setHourSourceTrack(videoHourObjectURL);
+        //console.log(`videoHourTrack was not loaded before playback and now needs to be loaded! ${videoHourTrack}`);
+        videoHourTrack.status = setHourSourceTrack(videoHourTrack.src);
       }
 
       // If the videoHourTrack's status is set to "loaded" then we were successful
@@ -697,14 +759,16 @@ function clockTick() {
       // actually loaded / ready to be played!
       if (videoHourTrack.status === "loaded") {
 
+        // playHour() starts the video playback and returns a value of "played"
+        // which the videoHourTrack's status is set to.
+        videoHourTrack.status = playHour();
+
         // Only now do we show the video hour player
         viewContainer.classList.add("hourOn");
         hourPlayer.classList.add("show");
         hourPlayer.classList.add("on");
 
-        // playHour() starts the video playback and returns a value of "played"
-        // which the videoHourTrack's status is set to.
-        videoHourTrack.status = playHour();
+
       } else {
         // because we'll load a new track on the cleanupHour
         // showHour needs to be false.
@@ -769,18 +833,12 @@ function clockTick() {
       // to get the video loaded, and this is it.
       if (videoTrack.status === "ready") {
         //console.log("THIS VIDEO WAS SET TO LOADED");
-        console.log(videoTrack);
-        videoTrack.status = setVideoSource(videoObjectURL);
+        console.log(`videoTrack has not been loaded on Second 6, but will be now: ${videoTrack}`);
+        videoTrack.status = setVideoSource(videoTrack.src);
       }
 
       // If the video was loaded at *any* point...
       if (videoTrack.status === "loaded") {
-        // show the video
-        showVideo = true;
-        videoPlayer.classList.remove("hide");
-        videoPlayer.classList.add("show");
-        videoPlayer.classList.add("on");
-
         // it should be noted that .play() on a video element returns a promise
         // if the tab is in the background (not visible) and the video media has
         // no sound, the video is automatically paused by Chrome.
@@ -790,9 +848,17 @@ function clockTick() {
 
         // https://developer.chrome.com/blog/media-updates-in-chrome-63-64/#background-video-track-optimizations
         // https://developer.chrome.com/blog/play-request-was-interrupted/
-        console.log("video should be playing");
+
         videoTrack.status = playVideo();
-        console.log(videoTrack);
+        // console.log("video should be playing");
+        
+        // show the video
+        showVideo = true;
+        videoPlayer.classList.remove("hide");
+        videoPlayer.classList.add("show");
+        videoPlayer.classList.add("on");
+
+        // console.log(videoTrack);
       } else {
         // if we failed to load the video, set the videoTrack's status to "missed"
         videoTrack.status = "missed";
@@ -814,6 +880,7 @@ function clockTick() {
 // ON LOAD EVENT
 /////////////////////////////////////////////////////////////////
 window.onload = function () {
+  "use strict";
 
   // audio should start not at speaker breaking volume!
   audioGain.gain.value = 0.05;
@@ -853,54 +920,12 @@ window.onload = function () {
 
       // if data contains the videoObjectURL prop, which will contain an
       // objectURL pointing to a blob of a video file, then...
-      if (data.videoObjectURL) {
 
-        if (requestData.type === "video") {
+      // UPDATE: 10-27-2024
+      // Removed the video handling side of this totally
 
-          //console.log("fetchWorker has sent videoObjectURL for video!" + data.videoObjectURL);
 
-          // check to make sure that the videoTrack.ID matches the ID we sent to the
-          // Worker when the initial request was made. Because requests are async,
-          // and because a videoTrack object could change before a slow request completes,
-          // this will (hopefully) prevent an outdated from being loaded when it shouldn't.
-          if (requestData.ID === videoTrack.ID) {
-
-            // set the videoObjectURL var to the value of the fetched data.
-            videoObjectURL = data.videoObjectURL;
-
-            // If the clock has already been started...
-            if (!started) {
-              // Load the objectURL into the video's source element.
-              // This will also return "loaded" to the videoTrack's status.
-              videoTrack.status = setVideoSource(videoObjectURL);
-            } else {
-
-              // Otherwise set the videoTrack's status to "ready".
-              videoTrack.status = "ready";
-            }
-
-          } else {
-            throw new Error(`mismatched message from fetchWorker.
-            reply sent: requestID: ${requestData.ID}
-            but track shows: videoTrack.ID: ${videoTrack.ID}`);
-          }
-
-        } else if (requestData.type === "videoHour") {
-
-          // If the fetchRequest was being made for the videoHour and not the videoTrack
-          // then we do much of the same, but for different variables.
-          if (requestData.ID === videoHourTrack.ID) {
-
-            videoHourObjectURL = data.videoObjectURL;
-            videoHourTrack.status = setHourSourceTrack(videoHourObjectURL);
-
-          } else {
-            throw new Error(`mismatched message from fetchWorker.
-            videoHour reply sent: requestID: ${requestData.ID}
-            but track shows: videoTrack.ID: ${videoHourTrack.ID}`);
-          }
-        }
-      } else if (requestData.type === "audio") {
+      if (requestData.type === "audio") {
 
         // Otherwise if the fetch request was made for an audio file...
 
@@ -1068,16 +1093,96 @@ window.onload = function () {
 
     // Video
     videoTrack = getNextVideoTrack(startTime.minutes, startTime.seconds);
-    videoTrack.status = "requesting";
-    fetchWorker.postMessage({"ID": videoTrack.ID, "fetch": true, "filename": videoTrack.filename, "path": videoTrack.path, "type": "video"});
+    videoTrack.status = setVideoSource(videoTrack.src);
+
     // Video Hour
     videoHourTrack = getNextVideoHourTrack(getRandomVideoSeason("hour"), startTime.hours + 1);
-    videoHourTrack.status = "requesting";
-    fetchWorker.postMessage({"ID": videoHourTrack.ID, "fetch": true, "filename": videoHourTrack.filename, "path": videoHourTrack.path, "type": "videoHour"});
+    videoHourTrack.status = setHourSourceTrack(videoHourTrack.src);
 
     // Audio
     audioTrack = getMinuteMusicTrack(startTime.minutes);
     // when this fetch resolves, it will initialize the clock
-    fetchWorker.postMessage({"fetch": true, "filename": audioTrack.filename, "path": audioAssetsPath, "type": "audio"});
+    fetchWorker.postMessage({
+      "filename": audioTrack.filename,
+      "isFetch": true,
+      "path": audioAssetsPath,
+      "type": "audio"
+    });
   }, {once: true}, false);
+
+  document.querySelector("body").addEventListener("keydown", function(event){
+    if (event.code === "KeyF") {
+      // fullscreen mode
+      enterFullScreen().then(function(){
+        document.body.classList.add("fullscreen");
+      });
+    } else if (event.code === "Escape") {
+      // exit fullscreen mode
+      exitFullScreen().then(function(){
+        document.body.classList.remove("fullscreen");
+      });
+    }
+  });
+
+  // Regex test to determine if user is on mobile
+  if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)) {
+    // If you double-tap then it should make it fullscreen.
+    // Likewise, if you tap, show the audionav bar for
+    // 5 seconds so that people can see that there is a way
+    // to adjust the volume!
+    document.body.addEventListener("touchend", (function(){
+      var audioNav = document.getElementById("audioNav");
+      var lastTouchTime = 0;
+      var visibleAudioNavTimeout;
+
+      return function(event){
+        var currentTime = Date.now();
+        var sinceLastTouch = currentTime - lastTouchTime;
+        if (lastTouchTime > 0 && sinceLastTouch < 500) {
+          event.preventDefault();
+          if (document.body.classList.contains("fullscreen")) {
+            exitFullScreen().then(function(){
+              document.body.classList.remove("fullscreen");
+            }).catch(function(){
+              // We need to add a catch here because you can exit
+              // full-screen mode on mobile by entering certain
+              // menus on the phone and then returning to the
+              // running browser tab.
+              //
+              // This just ensures that if we ever reach a state
+              // that would otherwise prevent us from toggling
+              // full-screen mode, there is a way to overcome that
+              document.body.classList.remove("fullscreen");
+            });
+          } else {
+            enterFullScreen().then(function(){
+              document.body.classList.add("fullscreen");
+            });
+          }
+          // If we have just toggled the full-screen mode then
+          // I don't want it to toggle again on a third press, so...
+          lastTouchTime = 0;
+        } else {
+          lastTouchTime = currentTime;
+        }
+
+        // If the audioNav is visible, then we can reset the countdown
+        // timer that will remove the class giving it opacity
+        if (visibleAudioNavTimeout !== undefined || audioNav.classList.contains("screenPressed")) {
+          visibleAudioNavTimeout = clearTimeout(visibleAudioNavTimeout);
+          visibleAudioNavTimeout = setTimeout(function(){
+            audioNav.classList.remove("screenPressed");
+            visibleAudioNavTimeout = clearTimeout(visibleAudioNavTimeout);
+          }, 5000);
+        } else {
+          // otherwise we set that timer up to show the audioNav to the user
+          audioNav.classList.add("screenPressed");
+          visibleAudioNavTimeout = setTimeout(function(){
+            audioNav.classList.remove("screenPressed");
+            visibleAudioNavTimeout = clearTimeout(visibleAudioNavTimeout);
+          }, 5000);
+        }
+      };
+    }()));
+  }
 };

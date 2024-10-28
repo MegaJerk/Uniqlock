@@ -4,74 +4,58 @@
   self, console
 */
 
-// import the indexedDB (or do *something* with it!) / cache
-import {videoURLCache, audioBufferCache} from "./modules/cache.js";
+var audioBufferCache = {};
 
 function fetchStream(type, path, filename, callback) {
-	var url = path + filename;
+  "use strict";
+  var url = path + filename;
 
-	if (type === "audio") {
-		if (audioBufferCache[filename]) {
-			return callback(audioBufferCache[filename]);
-		}
+  if (type === "audio") {
 
-		return Promise.all([fetch(url), filename]).then((vals)=>getAudioBufferArray(...vals)).then((vals)=>setArrayBuffer(...vals)).then(callback);
+    if (audioBufferCache[filename]) {
+      return callback(audioBufferCache[filename]);
+    }
 
-	} else if (type === "video" || type === "videoHour") {
-
-		if (videoURLCache[filename]) {
-			return callback(videoURLCache[filename]);
-		}
-		return Promise.all([fetch(url), filename]).then((vals)=>getVideoBlob(...vals)).then((vals)=>getObjectURL(...vals)).then(callback);
-	} else {
-		return undefined;
-	}
+    return Promise.all([fetch(url), filename]).then(function(vals){
+      return getAudioBufferArray(...vals);
+    }).then(function(vals){
+      return setArrayBuffer(...vals);
+    }).then(callback);
+  } else {
+    return undefined;
+  }
 }
 
 function getAudioBufferArray(stream, filename){
-	return Promise.all([stream.arrayBuffer(), filename]);
+  "use strict";
+  return Promise.all([stream.arrayBuffer(), filename]);
 }
 
-function setArrayBuffer(arrayBuffer, filename) {
-	if (filename) {
-		audioBufferCache[filename] = arrayBuffer;
-	}
+function setArrayBuffer(arrayBuffer, filename) {	
+  "use strict";
+  if (filename) {
+    //console.log(`Adding audio buffer to cache for file: ${filename}`);
+    audioBufferCache[filename] = arrayBuffer;
+  }
 
-	return arrayBuffer;
-}
-
-function getVideoBlob(stream, filename) {
-	return Promise.all([stream.blob(), filename]);
-}
-
-function getObjectURL(blob, filename){
-	var objectURL = self.URL.createObjectURL(blob);
-
-	if (filename) {
-		videoURLCache[filename] = objectURL;
-	}
-
-	return objectURL;
+  return arrayBuffer;
 }
 
 self.onmessage = function(event) {
-	var data = event.data;
-	var fetch = data.fetch;
-	var type = data.type;
-	var path = data.path;
-	var filename = data.filename;
+  "use strict";
+  var data = event.data;
+  var filename = data.filename;
+  var isFetch = data.isFetch;
+  var path = data.path;
+  var type = data.type;
 
-	console.log("fetchWorker.js - processing work request!");
+  //console.log("fetchWorker.js - processing work request!");
 
-	if (fetch) {
-		if (type === "video" || type === "videoHour") {
-			fetchStream(type, path, filename, function(videoObjectURL){
-				postMessage({"requestData": event.data, "videoObjectURL": videoObjectURL});
-			});
-		} else if (type === "audio") {
-			fetchStream(type, path, filename, function(arrayBuffer){
-				postMessage({"arrayBuffer": arrayBuffer, "requestData": event.data});
-			});
-		}
-	}
+  if (isFetch) {
+    if (type === "audio") {
+      fetchStream(type, path, filename, function(arrayBuffer){
+        postMessage({"arrayBuffer": arrayBuffer, "requestData": event.data});
+      });
+    }
+  }
 };
