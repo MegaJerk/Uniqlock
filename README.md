@@ -59,8 +59,6 @@ The version 1.x release is all about creating parity with the Flash versions of 
 
 	Flash was able to do some sort of Chromakey / Masking that made replacing one color value with another doable, apparently! I have not in any way implemented a similar feature into Uniqlock Rewind, but have done a little research which suggests that something similar is possible if I were to use the `<canvas>` element and a little magic. It's not high priority but I would like to at least see if I could get it working, and implemented assuming it doesn't destroy performance.
 
-
-
 ### Season 4 - Hour Videos
 
 - Missing the small clock that appears near the bottom of the screen during Hour Video playback.
@@ -70,7 +68,6 @@ The version 1.x release is all about creating parity with the Flash versions of 
 	![An image showing a frame from one of the Season 4 night time On-The-Hour videos, and the mini-clock and the mini-clock's reflection it shows near the bottom of the screen](https://github.com/MegaJerk/Uniqlock/blob/main/media/Season%204%20-%20On-The-Hour-MiniClock%20-%20Night.png?raw=true)
 
 - Missing the ability to specify that the hour videos *should* follow the Time of Day, but do not care about the current hour.
-
 
 I can't promise that *every* feature will be implemented in a quick way, but will do my best to get this as close to the original as possible.
 
@@ -89,6 +86,7 @@ As I work on getting this version as solid as possible, it is my desire to event
 After that, the tentative idea for a Version 3 would be giving users the ability to upload their own custom music and videos to use with the clock, to either be seamlessly integrated with the existing media, or used to replace it all together!
 
 Somewhere along the line (perhaps version 1.5!) I would also like to package this project up using Atom or some other cross-platform wrapper, that would allow for people to once again run the Uniqlock locally as a screensaver or program in a way that doesn't require any internet connectivity.
+
 
 
 ## Known Issues!
@@ -135,6 +133,8 @@ For a more thorough breakdown of who worked on what and other information regard
 If you believe that this project has violated your copyright, feel free to contact me for clarification / removal.
 
 Thank You.
+
+
 
 ## Special Thanks and Ending Credits
 
