@@ -9,7 +9,8 @@ import {seasonalData, videosBySeason, colorBySeason} from "./modules/defaultData
 /////////////////////////////////////////////////////////////////
 // AUDIO VARIABLES
 /////////////////////////////////////////////////////////////////
-var audioAssetsPath = "../assets/music/";
+var audioAssetsPath = window.location.origin + ((window.location.port !== "") ? "" : window.location.pathname) + "/assets/music/";
+//var audioAssetsPath = "../assets/music/";
 var audioTrack = {};
 var audioBuffer = undefined;
 var audioContext = new AudioContext();
@@ -18,7 +19,8 @@ var audioGain = audioContext.createGain();
 /////////////////////////////////////////////////////////////////
 // VIDEO VARIABLES
 /////////////////////////////////////////////////////////////////
-var videoAssetsPath = "../assets/videos/";
+var videoAssetsPath = window.location.origin + ((window.location.port !== "") ? "" : window.location.pathname) + "/assets/videos/";
+//var videoAssetsPath = "../assets/videos/";
 var videoTrack = {};
 var videoHourTrack = {};
 //var videoObjectURL = undefined;
