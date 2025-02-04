@@ -38,6 +38,11 @@ var time2 = document.querySelector("#time2 .time");
 
 var videoPlayer = document.querySelector("#videoPlayer");
 var video = document.querySelector("#videoPlayer video");
+
+
+
+
+
 //var source = document.querySelector("#videoPlayer video source");
 
 var hourPlayer = document.querySelector("#hourPlayer");
@@ -174,6 +179,7 @@ function getNextVideoTrack(minutes, seconds) {
     "index": randomIndex,
     "path": selectedSeasonPath,
     "season": season,
+    //"src": `${selectedSeasonPath}${selectedTrack}#t=0`, // tried the URI but it didn't help.
     "src": `${selectedSeasonPath}${selectedTrack}`,
     "status": "ready"
   };
@@ -216,6 +222,7 @@ function getNextVideoHourTrack(season, nextHour) {
 
 function setVideoSource(videoLoction) {
   video.src = videoLoction;
+  //video.load();
   return "loaded";
 }
 
@@ -244,14 +251,23 @@ NOTE: Not all of these are 100 percent not working, but most of them (from seaso
 for whatever reason. It's worth testing a handful to help get to the bottom of it.
 */
 function playVideo() {
+  video.currentTime = 0;
   var playback = video.play();
+  //playback = video.play();
 
   playback.catch(function (err) {
-    console.log("playback failure!");
-    console.log(err);
+    outputToConsole("playback failure!");
+    outputToConsole(err);
+  }).finally(function(data){
+    outputToConsole(`FUNCTION (finally):<video>.currentTime = ${video.currentTime}`);
   });
 
   return "played";
+}
+
+function stopVideo() {
+  video.pause();
+  outputToConsole(`video has been stopped`);
 }
 
 function playHour() {
@@ -543,7 +559,7 @@ function clockTick() {
 
   // grab the current clock time
   var currentTime = getTimes();
-
+  outputToConsole(`currentTime.seconds TICK START: ${currentTime.seconds}`);
   updateTime(currentTime.hours, currentTime.minutes, currentTime.seconds);
 
   // If the minutes && seconds === 0, then we know we've reached a new hour
@@ -644,6 +660,16 @@ function clockTick() {
     if (showVideo) {
 
       videoPlayer.classList.remove("show");
+
+      // IF WE ARE HERE AND THINGS ARE NOT PLAYING WE HAVE AN ISSUE
+      //console.log(`CleanUp: <video>.currentTime = ${video.currentTime}`);
+      //console.log(`CleanUp: <video>.duration = ${video.duration}`);
+      //if (video.currentTime === video.duration) {
+      //  videoTrack.status = playVideo();
+      //}
+      
+
+
 
       // the video has started playback, now we can call to load our next video
       // and get the blobURL
@@ -820,6 +846,7 @@ function clockTick() {
       // if for whatever reason the videoHourPlayer is still hidden
       // remove the class
       hourPlayer.classList.remove("hide");
+      //stopVideo();
     }
 
   // Otherwise if no videoplayer is shown...
@@ -835,7 +862,7 @@ function clockTick() {
       // to get the video loaded, and this is it.
       if (videoTrack.status === "ready") {
         //console.log("THIS VIDEO WAS SET TO LOADED");
-        console.log(`videoTrack has not been loaded on Second 6, but will be now: ${videoTrack}`);
+        outputToConsole(`videoTrack has not been loaded on Second 6, but will be now: ${videoTrack}`);
         videoTrack.status = setVideoSource(videoTrack.src);
       }
 
@@ -852,6 +879,7 @@ function clockTick() {
         // https://developer.chrome.com/blog/play-request-was-interrupted/
 
         videoTrack.status = playVideo();
+        outputToConsole(`JUST AFTER PLAYBACK: <video>.currentTime = ${video.currentTime}`);
         // console.log("video should be playing");
         
         // show the video
@@ -873,7 +901,9 @@ function clockTick() {
       videoPlayer.classList.remove("hide");
     }
   }
-
+  
+  outputToConsole(`Loop: <video>.currentTime = ${video.currentTime}`);
+  outputToConsole(`currentTime.seconds TICK END: ${currentTime.seconds}`);
   // The tick has completed
   // But time marches on...
 }
@@ -911,7 +941,7 @@ window.onload = function () {
 
     // Create a worker for our file requests
     fetchWorker = new Worker("./js/fetchWorker.js", {type: "module"});
-    console.log("Loading new Worker - fetchWorker.js");
+    outputToConsole("Loading new Worker - fetchWorker.js");
 
     // Set up the fetchWorker's message handler
     fetchWorker.onmessage = function (event) {
@@ -955,7 +985,7 @@ window.onload = function () {
             // If the clock has not yet started, this is where we'll kick it off...
             if (!started) {
 
-              console.log("Starting the Clock");
+              outputToConsole("Starting the Clock");
 
               //// PRE-START LOOP ////
               // When the device time seconds are too far from this app's seconds
@@ -968,7 +998,7 @@ window.onload = function () {
                 var ms = new Date().getMilliseconds();
                 if (ms < 10) {
 
-                  console.log("clearing out narrowMS, with ms of: " + ms);
+                  outputToConsole("clearing out narrowMS, with ms of: " + ms);
                   clearInterval(narrowMS);
                   initialize();
                 }
@@ -978,13 +1008,13 @@ window.onload = function () {
           });
         }
       } else {
-        console.log("The fetchWorker has sent a strange message that is neither for audio OR video!");
+        outputToConsole("The fetchWorker has sent a strange message that is neither for audio OR video!");
       }
     };
 
     // Create a worker to handle the clock ticking
     clickWorker = new Worker("./js/clickWorker.js", {type: "module"});
-    console.log("Loading new Worker - clickWorker.js");
+    outputToConsole("Loading new Worker - clickWorker.js");
 
     // Set up the clickWorker's message handler
     clickWorker.onmessage = function (event) {
@@ -998,12 +1028,12 @@ window.onload = function () {
 
         // Should probably throw a more visible alert than this,
         // but for now, at least indicate *somewhere* that something happened.
-        console.log("The clickworker has sent a strange message!");
+        outputToConsole("The clickworker has sent a strange message!");
       }
     };
   } else {
     // Indicate that we have no workers!
-    console.log("Now Hiring :(...");
+    outputToConsole("Now Hiring :(...");
   }
 
   // Setup the events for Audio Controls
@@ -1125,6 +1155,63 @@ window.onload = function () {
       });
     }
   });
+
+  // Events for the video and hourVideo players.
+  /*
+  video.addEventListener("play", (event) => {
+    outputToConsole("**PLAYING: The Boolean paused property is now 'false'. Either the play() method was called or the autoplay attribute was toggled.");
+  });
+  */
+  
+  video.addEventListener("ended", (event) => {
+    // FireFox is ***STILL*** having issues playing the videos. I now believe it has something to do
+    // with the source vids that I've converted into .webm. I'm not sure that there is anything
+    // that I can do about it, but the issue has been tracked down to the fact that for whatever
+    // reason, even if the video is set to start at 0 seconds, when playback is initiated - it will
+    // *sometimes* jump to the very end of the video (ONLY in FireFox from what I can tell).
+    //
+    // No amount of "playing" the video again with something like `video.play()` will work unless
+    // it is *after* the video has "ended" it's non-existing playback. So, to do that I have
+    // added an event listener for the "ended" event on the video control.
+    //
+    // This event will fire naturally throughout the course of regular playback, but when it sees that
+    // a video has "ended" playback on the same second as when it should be playing, it simply
+    // initiates playback again, which seems to do the trick.
+    //
+    // If anybody has any insight as to why on earth any of this is happening I would love to know!
+    // Message me on github!
+    var secondsEndingValue = (new Date()).getSeconds() % 10;
+    if (secondsEndingValue === 6) {
+      outputToConsole(`%c **ENDED PREMATURELY!: @ ${secondsEndingValue}`, `background: rgb(0, 0, 0); color:rgb(236, 11, 11)`);
+      outputToConsole(`%c **TRACK: videoTrack: ${video.src}`, `background: rgb(0, 0, 0); color:rgb(236, 11, 11)`);
+      video.play();
+    } else {
+      outputToConsole(`%c **TRACK (Ended Normally): videoTrack: ${video.src}`, `background: #rgb(59, 54, 54); color:rgb(202, 89, 19)`);
+    }  
+  });
+  
+  
+  hourVideo.addEventListener("ended", (event) => {
+    // Same stuff for the Hour Video just in case!
+  
+    var currentSeconds = (new Date()).getSeconds();
+    if (videoHourTrack.hourStartingSecond === currentSeconds) {
+      outputToConsole(`%c **HOUR ENDED PREMATURELY!: @ ${currentSeconds}`, `background: rgb(0, 0, 0); color:rgb(236, 11, 11)`);
+      outputToConsole(`%c **HOUR TRACK: videoTrack: ${hourVideo.src}`, `background: rgb(0, 0, 0); color:rgb(236, 11, 11)`);
+      hourVideo.play();
+    } else {
+      outputToConsole(`%c **TRACK (Ended Normally): videoTrack: ${hourVideo.src}`, `background: #rgb(59, 54, 54); color:rgb(202, 89, 19)`);
+    }  
+  });
+  /*
+  video.addEventListener("canplay", (event) => {
+    outputToConsole("**CANPLAY: Video can start, but not sure it will play through.");
+  });
+  
+  video.addEventListener("canplaythrough", (event) => {
+    outputToConsole("**CANPLAYTHROUGH: I think I can play through the entire video without having to stop to buffer.");
+  });
+   */
 
   // Regex test to determine if user is on mobile
   if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)) {

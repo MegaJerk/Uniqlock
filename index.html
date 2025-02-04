@@ -22,6 +22,14 @@
 		<meta name="twitter:image:alt" content="two dancers looking forward at the camera and holding the same pose, each dancer is using their hands to imitate the shape of a bird. The text Uniqlock Rewind is shown in the top left corner of the image, while the text Music, Dance, Clock is shown along the bottom." />
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 		<link rel="stylesheet" href="./css/style.css">
+		<script type="text/javascript">
+			var debuggingMessages = false;
+			var outputToConsole = function(...args){
+				if (debuggingMessages) {
+					console.log(...args);
+				}
+			}
+	 	</script>
 	</head>
 
 	<body>
@@ -38,6 +46,9 @@
          <span class="modalTextUpper">UNIQLOCK</span>
 				 <span class="modalTextLower"><i>REWIND &lt;&lt;</i></span>
       </div>
+			<div class="modalInstructions">
+				<span class="modalInstructionsText">(click or tap anywhere to begin)</span>
+		 </div>
 			<div class="marqueeContainer">
 				<div class="marqueeBottom">
 					<div class="marqueeText redText">
@@ -73,12 +84,12 @@
 				</div>
 				<div id="videoPlayer" class="">
 					<!-- <video class="video" onloadeddata='(function(){console.log("video - onload: loaded");}())'> -->
-					<video class="video">						
+					<video class="video" type="video/webm">						
 							<!-- <source src="" type="video/webm"> -->
 					</video>
 				</div>
 				<div id="hourPlayer" class="">
-					<video class="video">
+					<video class="video" type="video/webm">
 						<!-- <source src="" type="video/webm"> -->
 					</video>
 				</div>

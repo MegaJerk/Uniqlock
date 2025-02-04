@@ -22,6 +22,7 @@
 	--secondary-color: var(--color_2);
 	--background-color: white;
 	--foreground-color: red;
+	--aspectRatio: 16/9;
 }
 
 * {
@@ -56,6 +57,7 @@ body {
 	width: 100dvw;
 	font-family: Uniqlo, sans-serif;
 	white-space: nowrap;
+	background-color: black;
 }
 
 body.hide{
@@ -77,8 +79,15 @@ body.hide{
 
 #viewContainer {
   position: absolute;
+	/*
   width: min(100vw, 100dvw);
-  height: calc(min(100vw, 100dvw) * 9 / 16);
+  height: (min(100vw, 100dvw) * var(--aspectRatio));
+	
+	
+	
+	*/
+	width: min(100vw, 100dvw, 100cqw, var(--aspectRatio) * 100dvh, var(--aspectRatio) * 100vh, var(--aspectRatio) * 100cqh);
+  height: min(100vh, 100dvh, 100cqh, 100vw / (var(--aspectRatio)), 100dvw / (var(--aspectRatio)), 100cqw / (var(--aspectRatio)));
 	z-index: 0;
   display: flex;
   align-items: center;
@@ -593,30 +602,10 @@ it after it has been opened or closed! */
 	transition-duration: 1s;	
 }
 
-.modalText:hover{
+#modal:not(.hide) .modalText:hover{
 	text-shadow: 0 0 20px #fff, 0 0 50px #fff;
 }
-
-@keyframes glowIn {
-  from {
-    text-shadow: 0 0 5px #fff;
-  }
-  
-  to {
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 50px #fff; 
-  }
-}
-
-@keyframes glowOut {
-  from {
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 50px #fff; 
-  }
-  
-  to {    
-		text-shadow: 0 0 0 #fff;
-  }
-}
-
+ 
 .modalText span {
 	display: block;
 }
@@ -624,6 +613,24 @@ it after it has been opened or closed! */
 .modalTextLower {
 	font-size: 6rem;
 	line-height: 3rem;
+}
+
+#modal:not(.hide) .modalInstructions {
+  animation: pulseInstructions 1.5s ease-in-out infinite alternate;
+}
+
+.modalInstructionsText {
+	font-size: 1.5rem;
+	line-height: 3rem;
+}
+
+@keyframes pulseInstructions {
+  0% {
+    text-shadow: 0 0 1px #fff;
+  }
+  100% {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 50px #fff;
+  }
 }
 
 #modal.wipe{
