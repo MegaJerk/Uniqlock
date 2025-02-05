@@ -598,11 +598,12 @@ it after it has been opened or closed! */
 	max-height: 60%;
 	cursor: pointer;
 	text-shadow: 0 0 0 #fff;
-	transition-property: text-shadow;
-	transition-duration: 1s;	
+		
 }
 
 #modal:not(.hide) .modalText:hover{
+	transition-property: text-shadow;
+	transition-duration: 1s;
 	text-shadow: 0 0 20px #fff, 0 0 50px #fff;
 }
  
@@ -634,7 +635,8 @@ it after it has been opened or closed! */
 }
 
 #modal.wipe{
-	animation: wipeSplashLeftToRight 400ms ease-out forwards;
+	animation-iteration-count: 1;
+	animation: wipeSplashLeftToRight 400ms ease-out forwards 1;
 }
 
 @keyframes wipeSplashLeftToRight {
@@ -642,6 +644,9 @@ it after it has been opened or closed! */
 	to { clip-path: inset(0% 0% 0% 100%); }
 }
 
+#modal.hide {
+	display: none;
+}
 
 
 /* /////////////////////////////////////////////////////////// */
@@ -697,6 +702,10 @@ Uniqlo period looks when used as a bullet, so here we are */
 
 .marqueeTop > .marqueeText > div.rtl {
 	will-change: transform;
+	
+}
+
+#modal:not(.hide) .marqueeTop > .marqueeText > div.rtl { 
 	animation: textScroll_rtl 160s linear infinite;
 }
 
@@ -733,13 +742,13 @@ Uniqlo period looks when used as a bullet, so here we are */
 
 .marqueeContainer .marqueeBottom .marqueeText>div {
 	will-change: transform;	
-	animation: marquee 20s linear infinite;
-	animation-direction: reverse;
 	text-align: center;
 	margin: 0;
-
 }
 
+#modal:not(.hide) .marqueeContainer .marqueeBottom .marqueeText>div {
+	animation: marquee 20s linear infinite reverse;
+}
 
 
 

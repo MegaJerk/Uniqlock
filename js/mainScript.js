@@ -485,6 +485,14 @@ function initialize() {
     updateTime(startTime.hours, startTime.minutes, startTime.seconds);
     setColors(startTime.hours, availableSeasons.highest);
 
+    // wipe the modal away revealing the clock
+    document.getElementById("modal").classList.add("wipe");
+
+    setTimeout(function(){
+      // display:none the modal to stop animations
+      document.getElementById("modal").classList.add("hide");
+    }, 1000);
+
     // If we can use Web Workers, then we'll send a message to it so that
     // our setInterval is being ran on a different thread.
     // This will prevent the browser from throttling the execution of
@@ -505,11 +513,8 @@ function initialize() {
     }
   }());
 
-  // wipe the modal away revealing the clock
-  document.getElementById("modal").classList.add("wipe");
-
-  // display:none the modal to stop animations
-  document.getElementById("modal").classList.add("hide");
+  
+  
 }
 
 function enterFullScreen() {
