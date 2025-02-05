@@ -160,16 +160,19 @@ body.hide{
 	that they are!
 */
 
-#viewContainer.top-to-bottom #time2:not(.locked) {
+/* #viewContainer.top-to-bottom */
+/* #viewContainer:has(#videoPlayer.show.on, #videoPlayer.hide, #videoPlayer:not(.hide.on)) */
+
+#viewContainer:has(#videoPlayer:not(.on:not(.show))).top-to-bottom #time2:not(.locked) {
 	animation: animateTopToBottom 300ms forwards var(--ease-out);
 }
-#viewContainer.right-to-left #time2:not(.locked) {
+#viewContainer:has(#videoPlayer:not(.on:not(.show))).right-to-left #time2:not(.locked) {
 	animation: animateRightToLeft 300ms forwards var(--ease-out);
 }
-#viewContainer.bottom-to-top #time2:not(.locked) {
+#viewContainer:has(#videoPlayer:not(.on:not(.show))).bottom-to-top #time2:not(.locked) {
 	animation: animateBottomToTop 300ms forwards var(--ease-out);
 }
-#viewContainer.left-to-right #time2:not(.locked) {
+#viewContainer:has(#videoPlayer:not(.on:not(.show))).left-to-right #time2:not(.locked) {
 	animation: animateLeftToRight 300ms forwards var(--ease-out);
 }
 
@@ -209,65 +212,65 @@ body.hide{
 	Otherwise this would be far smaller :)
 */
 
-#time2.pulse span[data-previous-Value='0'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='0'] {
 	animation: pulseTime_2_0 900ms normal;
 }
-#time2.pulse span[data-previous-Value='1'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='1'] {
 	animation: pulseTime_2_1 900ms normal;
 }
-#time2.pulse span[data-previous-Value='2'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='2'] {
 	animation: pulseTime_2_2 900ms normal;
 }
-#time2.pulse span[data-previous-Value='3'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='3'] {
 	animation: pulseTime_2_3 900ms normal;
 }
-#time2.pulse span[data-previous-Value='4'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='4'] {
 	animation: pulseTime_2_4 900ms normal;
 }
-#time2.pulse span[data-previous-Value='5'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='5'] {
 	animation: pulseTime_2_5 900ms normal;
 }
-#time2.pulse span[data-previous-Value='6'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='6'] {
 	animation: pulseTime_2_6 900ms normal;
 }
-#time2.pulse span[data-previous-Value='7'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='7'] {
 	animation: pulseTime_2_7 900ms normal;
 }
-#time2.pulse span[data-previous-Value='8'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='8'] {
 	animation: pulseTime_2_8 900ms normal;
 }
-#time2.pulse span[data-previous-Value='9'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time2.pulse span[data-previous-Value='9'] {
 	animation: pulseTime_2_9 900ms normal;
 }
 
-#time1.pulse span[data-previous-Value='0'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='0'] {
 	animation: pulseTime_1_0 900ms normal;
 }
-#time1.pulse span[data-previous-Value='1'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='1'] {
 	animation: pulseTime_1_1 900ms normal;
 }
-#time1.pulse span[data-previous-Value='2'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='2'] {
 	animation: pulseTime_1_2 900ms normal;
 }
-#time1.pulse span[data-previous-Value='3'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='3'] {
 	animation: pulseTime_1_3 900ms normal;
 }
-#time1.pulse span[data-previous-Value='4'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='4'] {
 	animation: pulseTime_1_4 900ms normal;
 }
-#time1.pulse span[data-previous-Value='5'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='5'] {
 	animation: pulseTime_1_5 900ms normal;
 }
-#time1.pulse span[data-previous-Value='6'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='6'] {
 	animation: pulseTime_1_6 900ms normal;
 }
-#time1.pulse span[data-previous-Value='7'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='7'] {
 	animation: pulseTime_1_7 900ms normal;
 }
-#time1.pulse span[data-previous-Value='8'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='8'] {
 	animation: pulseTime_1_8 900ms normal;
 }
-#time1.pulse span[data-previous-Value='9'] {
+#viewContainer:not(:has(#videoPlayer.on, #hourPlayer.on)) #time1.pulse span[data-previous-Value='9'] {
 	animation: pulseTime_1_9 900ms normal;
 }
 
